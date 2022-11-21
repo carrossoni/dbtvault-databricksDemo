@@ -1,0 +1,55 @@
+
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
+name: 'dbtvault_databricks_demo'
+version: '1.0.0'
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'dbtvault_databricks_demo'
+
+analysis-paths:
+  - analysis
+clean-targets:
+  - target
+seed-paths:
+  - seeds
+macro-paths:
+  - macros
+model-paths:
+  - models
+test-paths:
+  - tests
+target-path: target
+
+vars:
+  load_date: '1992-01-08'
+
+models:
+  dbtvault_databricks_demo:
+    raw_stage:
+      tags:
+        - 'raw'
+      materialized: table
+    stage:
+      tags:
+        - 'stage'
+      enabled: true
+      materialized: table
+    raw_vault:
+      tags:
+        - 'raw_vault'
+      materialized: incremental
+      hubs:
+        tags:
+          - 'hub'
+      links:
+        tags:
+          - 'link'
+      sats:
+        tags:
+          - 'satellite'
+      t_links:
+        tags:
+          - 't_link'

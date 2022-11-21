@@ -1,0 +1,177 @@
+We can begin loading our vault now that we have a staging layer with all the columns we require.
+
+## Hubs
+
+Hubs are one of the core building blocks of a Data Vault.
+
+In general, they consist of 4 columns, but may have more:
+
+1. A primary/hash key (or surrogate key) which is usually a hashed representation of the natural key (also known as the business key).
+
+2. The natural key. This is usually a formal identification for the record such as a customer ID or
+   order number (can be multi-column).
+
+3. The load date or load date timestamp. This identifies when the record was first loaded into the vault.
+
+4. The source for the record, a code identifying where the data comes from.
+
+### Deploying Hubs
+
+To compile and load the provided Hub models, run the following command:
+
+=== "< dbt v0.20.x"
+`dbt run -m tag:hub`
+
+=== "> dbt v0.21.0"
+`dbt run -s tag:hub`
+
+This will run all models with the `hub` tag.
+
+## Links
+
+Links are another fundamental component in a Data Vault.
+
+Links model an association or link, between two business keys. They commonly hold business transactions or structural
+information. A Link specifically contains the structural information.
+
+Our Links will contain:
+
+1. A primary key. For Links, we take the natural keys (prior to hashing) represented by the foreign key columns
+   and create a hash on a concatenation of them.
+2. Foreign keys holding the primary key for each Hub referenced in the Link (2 or more depending on the number of Hubs
+   referenced)
+3. The load date or load date timestamp.
+4. The source for the record
+
+### Deploying Links
+
+To compile and load the provided Link models, run the following command:
+
+=== "< dbt v0.20.x"
+`dbt run -m tag:link`
+
+=== "> dbt v0.21.0"
+`dbt run -s tag:link`
+
+This will run all models with the `link` tag.
+
+## Satellites
+
+Satellites contain point-in-time payload data related to their parent Hub or Link records.
+Each Hub or Link record may have one or more child Satellite records, allowing us to record changes in
+the data as they happen.
+
+They will usually consist of the following columns:
+
+1. A primary key (or surrogate key) which is usually a hashed representation of the natural key.
+
+2. A hashdiff. This is a concatenation of the payload (below) and the primary key. This
+   allows us to detect changes in a record. For example, if a customer changes their name,
+   the hashdiff will change as a result of the payload changing.
+
+3. A payload. The payload consists of concrete data for an entity, i.e. a customer record. This could be
+   a name, a date of birth, nationality, age, gender or more. The payload will contain some or all of the
+   concrete data for an entity, depending on the purpose of the Satellite.
+
+4. An effectivity date. Usually called `EFFECTIVE_FROM`, this column is the business effective date of a
+   Satellite record. It records that a record is valid from a specific point in time.
+   If a customer changes their name, then the record with their 'old' name should no longer be valid, and it will no longer
+   have the most recent `EFFECTIVE_FROM` value.
+
+5. The load date or load date timestamp. This identifies when the record was first loaded into the vault.
+
+6. The source for the record.
+
+!!! note
+`LOAD_DATE` is the time the record is loaded into the database. `EFFECTIVE_FROM` is different and may hold a
+different value, especially if there is a batch processing delay between when a business event happens and the
+record arriving in the database for load. Having both dates allows us to ask the questions 'what did we know when'
+and 'what happened when' using the `LOAD_DATE` and `EFFECTIVE_FROM` date accordingly.
+
+### Deploying Satellites
+
+To compile and load the provided Satellite models, run the following command:
+
+=== "< dbt v0.20.x"
+`dbt run -m tag:satellite`
+
+=== "> dbt v0.21.0"
+`dbt run -s tag:satellite`
+
+This will run all models with the `satellite` tag.
+
+## Transactional Links
+
+Transactional Links are used to model transactions between entities in a Data Vault.
+
+Links model an association or link, between two business keys. They commonly hold business transactions or structural
+information. A Transactional Link specifically contains the business transactions.
+
+Our Transactional Links will contain:
+
+1. A primary key. For Transactional Links, we use the transaction number. If this is not already present in the dataset
+   then we create this by concatenating the foreign keys and hashing them.
+2. Foreign keys holding the primary key for each Hub referenced in the Transactional Link (2 or more depending on the number of Hubs
+   referenced)
+3. A payload. This will be data about the transaction itself e.g. the amount, type, date or non-hashed transaction number.
+4. An `EFFECTIVE_FROM` date. This will usually be the date of the transaction.
+5. The load date or load date timestamp.
+6. The source for the record
+
+### Deploying Transactional Links
+
+To compile and load the provided Transactional Link models, run the following command:
+
+=== "< dbt v0.20.x"
+`dbt run -m tag:t_link`
+
+=== "> dbt v0.21.0"
+`dbt run -s tag:t_link`
+
+This will run all models with the `t_link` tag.
+
+## Loading the full system
+
+Each of the commands above load a particular type of table, however, we may want to do a full system load.
+
+To do this, run the command below:
+
+`dbt run --full-refresh`
+
+This will run all models in the project.
+
+## Loading the next day-feed
+
+Now that we have loaded all records for the date `1992-01-08`, we can increment the date to load the next day.
+
+Return to the `dbt_project.yml` file and change the date to `1992-01-09`:
+
+=== "dbt_project.yml"
+
+    ```
+    vars:
+      load_date: '1992-01-08'
+    
+    models:
+      dbtvault_databricks_demo:
+    ```
+
+And run:
+
+`dbt run`
+
+This will load the next day-feed into the system.
+
+## Next steps
+
+Now that you have a taste for how dbtvault and Data Vault works, you may be itching to implement Data Vault in
+a production system.
+
+There are a range of skills you need to learn, but this is the same for all Data Warehouse architectures.
+
+We understand that it's a daunting process, but not to worry!
+
+We can shortcut your adoption process with Data Vault training, coaching and advice so that you can develop a
+practical Data Vault demonstration to impress your stakeholders.
+
+[Find out more](https://www.data-vault.co.uk/dbtvault/){: .md-button .md-button--primary .btn }
