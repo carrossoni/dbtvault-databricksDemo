@@ -14,7 +14,7 @@ This work was inspired by the dbtvault worked example already available in the d
 
 ## Requirements
 
-For this example yo will need:
+For this example you will need:
 
 - Databricks workspace access and a personal access token [PAT](https://docs.databricks.com/dev-tools/api/latest/authentication.html#generate-a-personal-access-token)
 - A SQL Warehouse  created to serve as endpoint. Needs to get the [HTTP Path](https://docs.databricks.com/integrations/jdbc-odbc-bi.html#get-connection-details-for-a-sql-warehouse) information
