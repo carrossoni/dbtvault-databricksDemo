@@ -87,7 +87,7 @@ Click the button above to read the latest dbtvault docs.
 
 ---
 - [dbt](https://www.getdbt.com/) is a registered trademark of [Fishtown Analytics](https://www.fishtownanalytics.com/).
-- [dbtvault](https://dbtvault.readthedocs.io/en/latest/) is a free dbt package created by [Datavault-UK](https://www.fishtownanalytics.com/).
+- [dbtvault](https://dbtvault.readthedocs.io/en/latest/) is a free dbt package created by [Datavault-UK](https://www.data-vault.co.uk/).
 
 
 Check them out below:
