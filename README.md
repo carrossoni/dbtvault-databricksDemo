@@ -69,7 +69,7 @@ and this step will create a profile in your .dbt home dir, you can change this b
 2. [Prepare raw and staging layers](./docs/staging.md)
 3. [Create and populate the Datavault model](./docs/loads.md)
 
-To load incrementally the data you can change the following variable in the dbt_project.yml 
+To load incrementally the data you can change the date variable in the dbt_project.yml 
 file and execute `dbt run` as explained in the [Step 3](./docs/loads.md#loading-the-next-day-feed).
 
 ## Results
